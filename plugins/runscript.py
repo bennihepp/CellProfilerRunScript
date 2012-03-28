@@ -299,7 +299,7 @@ class RunScript(cpm.CPModule):
         lines.insert(0, '# Loaded on: %s\n' \
                      % datetime.datetime.now().strftime('%D-%T'))
         source = ''.join(lines)
-        self.script_text.set_value(source)
+        self.script_text.value = source
 
     def add_input_image_cb(self):
         '''Add an image to the input_image_groups collection'''
@@ -704,7 +704,8 @@ class RunScript(cpm.CPModule):
                      + source
         elif self.wants_debug_mode == WD_RPDB2:
             source = u"import rpdb2\nrpdb2.set_trace()\n\n" + source
-        print 'Script source:', source
+        # TODO: only print when not in batch mode
+        #print 'Script source:', source
         # create a temporary file with the script source for debugging
         tmpfile_handle, tmpfile_path = tempfile.mkstemp(
             suffix='.py', prefix='CPRunScript_')
@@ -712,7 +713,7 @@ class RunScript(cpm.CPModule):
         tmpfile.write(source)
         tmpfile.close()
         # keep path of temporary file for deletion in post_run()
-        self.__tmp_file_path = tmpfile_path
+        self.__tmpfile_path = tmpfile_path
         # compile the script source into an AST tree
         asttree = compile(source, tmpfile_path, 'exec', ast.PyCF_ONLY_AST)
         # compile the AST tree into a code object
